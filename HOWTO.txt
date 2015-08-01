@@ -1,0 +1,69 @@
+
+
+Pour tous les scripts ci-dessous :
+on  les lance en faisant :
+'sh script.sh file @listedeswitch'
+ou
+sh script.sh single @IP @communaute
+
+SCRIPT snmp_get_interface_status.sh
+===================================
+
+polle un ou plusieurs switchs pour connaitre l'etat (up/down) des interfaces;
+le resultat est sous la forme :
+HOSTNAME;PORT;ADMIN_STATUS;OPER_STATUS;DESC;SPEED
+
+SCRIPT snmp_get_macs.sh
+=======================
+1. modifier le fichier de switchs a requeter le format est :
+hostname--$IP--$communaute--$uplink
+
+pour les uplink mettre sous la port Port1|Port2|Port3  etc...
+
+2. executer le script "snmp_get_macs.sh file @sw_list" et sauvegarder le resultat dans un fichier
+
+
+le resultat est de la forme
+HOSTNAME;PORT;MAC;VLAN;
+
+
+3. modifier le fichier de Niveau3 ayant des entrees ARP sur le perimetre format :
+hostname--$IP--$communaute
+
+4. executer le script  "snmp_get_arp.sh @L3-list" et sauvegarder le resultat dans un fichier
+
+5. lancer le script sur les 2 fichiers produit precedemment "get_ip_ports.sh @mac_addresses @arp_list"
+
+
+si on veut tous les ports de switchs (meme ceux qui sont down)
+--------------------------------------------------------------
+
+snmp_get_interfaces_status.sh file @sw-list
+snmp_get_macs.sh file @sw-list
+snmp_get_arp.sh @L3-list
+get_ip_ports2.sh @port-list @mac_addresses @arp_list
+
+
+
+SCRIPT snmp_get_switchport.sh
+=============================
+
+polle un ou plusieurs switchs pour connaitre la configuration de chaque port (access, trunk)
+le resultat est sous la forme :
+HOSTNAME;PORT;MODE;VLANS
+si le port est un trunk, VLANS peut contenir une liste "2 4 5 10 40" ou bien ALL
+
+
+SCRIPT snmp_get_vlans.sh
+========================
+
+polle un ou plusieurs switchs pour connaitre les vlans definis dessus
+le resultat est de la forme
+HOSTNAME;VLANID;VLAN_NAME
+
+On peut ensuite utiliser le script "create_vlans_csv.sh " pour creer un tableau avec en colonne les switch et en ligne les numeros de vlan
+
+Bibliotheque lib_snmp.sh
+=========================
+
+Cette librairie est appelee par les autres scripts et contient plusieurs fonctions reutilisables dans un autre script
